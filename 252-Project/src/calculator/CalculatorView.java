@@ -1,0 +1,122 @@
+package calculator;
+
+import java.awt.*;
+import javax.swing.*;
+
+public class CalculatorView extends JFrame {
+    /**
+     * the display of the calculator
+     */
+    private JLabel display;
+
+    /**
+     * the buttons of the calculator
+     */
+    private JPanel buttonsPanel;
+
+    /**
+     * the menu of the calculator
+     */
+    private JMenu exampleMenu;
+
+    /**
+     * the number of fractional digits to show or -1
+     */
+    private int digits;
+
+    /**
+     * Creates the panels and components for the JFrame
+     */
+    public CalculatorView() {
+        super("Simple Calculator");
+
+        // create the menu
+
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        exampleMenu = new JMenu("Menu");
+        menuBar.add(exampleMenu);
+
+        JMenuItem twoDigitsButton = new JMenuItem("Two Decimal Digits");
+        exampleMenu.add(twoDigitsButton);
+
+        JMenuItem anyDigitsButton = new JMenuItem("Any Decimal Digits");
+        exampleMenu.add(anyDigitsButton);
+
+        JMenuItem exitButton = new JMenuItem("Exit");
+        exampleMenu.add(exitButton);
+
+        // create the display
+
+        JPanel displayPanel = new JPanel();
+        add(displayPanel, BorderLayout.NORTH);
+
+        display = new JLabel("0.0");
+        displayPanel.add(display);
+        digits = -1;
+
+        // create the buttons
+
+        buttonsPanel = new JPanel();
+        add(buttonsPanel, BorderLayout.CENTER);
+        buttonsPanel.setLayout(new GridLayout(4, 4, 0, 0));
+
+        String[] buttonStrings = {
+                "1", "2", "3", "+",
+                "4", "5", "6", "-",
+                "7", "8", "9", "*",
+                "0", ".", "=", "/"
+        };
+
+        for (String s : buttonStrings) {
+            buttonsPanel.add(new JButton(s));
+        }
+    }
+
+    /**
+     * Register the controller as the listener to the menu items
+     * and the buttons.
+     */
+    public void registerListener(CalculatorController controller) {
+        Component[] components = buttonsPanel.getComponents();
+        for (Component component : components) {
+            if (component instanceof AbstractButton) {
+                AbstractButton button = (AbstractButton) component;
+                button.addActionListener(controller);
+            }
+        }
+
+        components = exampleMenu.getMenuComponents();
+        for (Component component : components) {
+            if (component instanceof AbstractButton) {
+                AbstractButton button = (AbstractButton) component;
+                button.addActionListener(controller);
+            }
+        }
+    }
+
+    /**
+     * Display the value in the JLabel of the calculator.
+     * Round off the number of digits if needed.
+     * 
+     */
+    public void update(String value) {
+        if (digits < 0) {
+            display.setText(value);
+        } else {
+            String format = "%." + digits + "f";
+            String text = String.format(format, Double.valueOf(value));
+            display.setText(text);
+        }
+    }
+
+    /**
+     * Set the number of fractional digits to display.
+     * -1 means display them all.
+     * 
+     */
+    public void setDigits(int digits) {
+        this.digits = digits;
+    }
+}
